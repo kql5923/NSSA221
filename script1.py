@@ -20,7 +20,7 @@ def check_connection(defaultgateway):
     try:
         param = '-n' if platform.system().lower() == 'windows' else '-c'
         command = ['ping',param,'3',defaultgateway]
-        status = subprocess.call(command)
+        status = subprocess.call(command,stdout = subprocess.PIPE)
         if status == 0:
             return "HOST IS UP!"
         else:
@@ -29,11 +29,11 @@ def check_connection(defaultgateway):
     except Exception as e:
         print("[!!!ERR] " + str(e))
 def test_dns_res(hostname):
-    result = (socket.gethostbyname(hostname))
-    print(f"[+] Hostname {hostname} resolved to {result}")
-    if result == "172.217.10.4":
-        return "DNS RESOLUTION SUCESSFUL!"
-    else:
+    try:
+        result = (socket.gethostbyname(hostname))
+        resolution = (f"[+] Hostname {hostname} resolved to {result}")
+        return "DNS RESOLUTION SUCESSFUL! \n(" + resolution + ")"
+    except socket.error:
         return "DNS RESOLUTION FAILED!"
 
 def main(): 
