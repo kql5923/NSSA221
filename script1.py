@@ -6,6 +6,7 @@ import socket
 import platform
 import sys
 def get_DG():
+    # dg check script, checks if windows and uses string parser to only find DG, and then split and return the ipv4 addr
     try:
         if(sys.platform.startswith('win')):
             cmd = subprocess.check_output('ipconfig | findstr /i "Gateway"', shell = True)
@@ -18,10 +19,12 @@ def get_DG():
             cmd_spl = cmd.split(" ")
             return cmd_spl[2]
     except Exception as e:
+        # used so that next function has an ip to at least use, uses loopback GW I believe
         print("[!!!ERR] unable to find default gateway, make sure computer is connected. Returning 0.0.0.0")
         return "0.0.0.0"
 
 def check_connection(defaultgateway):
+    #uses simple ping test to see if the ping fails or works, also handles -n vs -c (found answer on stack exchange)
     try:
         param = '-n' if platform.system().lower() == 'windows' else '-c'
         command = ['ping',param,'3',defaultgateway]
@@ -34,6 +37,8 @@ def check_connection(defaultgateway):
     except Exception as e:
         print("[!!!ERR] " + str(e))
 def test_dns_res(hostname):
+    # uses sockets to check to resolve hostname, if it fails or times out, resolution does not work
+    # originally checked to see if the ip was correct, but different servers take different routes and get a different ip, and thus why it is dynamic resolution
     try:
         result = (socket.gethostbyname(hostname))
         resolution = (f"[+] Hostname {hostname} resolved to {result}")
@@ -41,7 +46,7 @@ def test_dns_res(hostname):
     except socket.error:
         return "DNS RESOLUTION FAILED!"
 
-def main(): 
+def main(): #main runner print function
     print("---- Starting ----")
     print("[!] Finding default gateway")
     dg = get_DG()
