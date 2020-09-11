@@ -22,7 +22,6 @@ def check_connection(defaultgateway):
         command = ['ping',param,'3',defaultgateway]
         status = subprocess.call(command)
         if status == 0:
-
             return "HOST IS UP!"
         else:
 
