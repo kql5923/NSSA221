@@ -3,6 +3,7 @@
 import os
 import subprocess
 import socket
+import platform
 import sys
 def get_DG():
     if(sys.platform.startswith('win')):
@@ -11,19 +12,23 @@ def get_DG():
         cmd_spl = cmd.split(":")
         return cmd_spl[1]
     else:
-        cmd = subprocess.check_output('ifconfig | grep default"', shell = True)
+        cmd = subprocess.check_output('ip route | grep default', shell = True)
         cmd = cmd.decode()
         cmd_spl = cmd.split(" ")
         return cmd_spl[2]
 def check_connection(defaultgateway):
-    status,result = subprocess.getstatusoutput('ping ' + str(defaultgateway))
-   
-    if status == 0:
+    try:
+        param = '-n' if platform.system().lower() == 'windows' else '-c'
+        command = ['ping',param,'3',defaultgateway]
+        status = subprocess.call(command)
+        if status == 0:
 
-        return "HOST IS UP!"
-    else:
+            return "HOST IS UP!"
+        else:
 
-        return "HOST IS DOWN!"
+            return "HOST IS DOWN!"
+    except Exception as e:
+        print("[!!!ERR] " + str(e))
 def test_dns_res(hostname):
     result = (socket.gethostbyname(hostname))
     print(f"[+] Hostname {hostname} resolved to {result}")
@@ -44,10 +49,10 @@ def main():
     google_dns_status = check_connection("8.8.8.8")
     print("[!] Checking dns Resolution to GOOGLE (www.google.com) please wait")
     dns_res = test_dns_res("www.google.com")
-    if(sys.platform.startswith('win')):
-        os.system("cls")
-    else:
-        os.system("clear")
+    # if(sys.platform.startswith('win')):
+    #     os.system("cls")
+    # else:
+    #     os.system("clear")
     print("-------- < results > -----")
     print(f"[done] Default gatway : {dg}")
     print(f'[done] Status of Default Gatway connection: {dg_status}')
