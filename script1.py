@@ -6,16 +6,21 @@ import socket
 import platform
 import sys
 def get_DG():
-    if(sys.platform.startswith('win')):
-        cmd = subprocess.check_output('ipconfig | findstr /i "Gateway"', shell = True)
-        cmd = cmd.decode()
-        cmd_spl = cmd.split(":")
-        return cmd_spl[1]
-    else:
-        cmd = subprocess.check_output('ip route | grep default', shell = True)
-        cmd = cmd.decode()
-        cmd_spl = cmd.split(" ")
-        return cmd_spl[2]
+    try:
+        if(sys.platform.startswith('win')):
+            cmd = subprocess.check_output('ipconfig | findstr /i "Gateway"', shell = True)
+            cmd = cmd.decode()
+            cmd_spl = cmd.split(":")
+            return cmd_spl[1]
+        else:
+            cmd = subprocess.check_output('ip route | grep default', shell = True)
+            cmd = cmd.decode()
+            cmd_spl = cmd.split(" ")
+            return cmd_spl[2]
+    except Exception as e:
+        print("[!!!ERR] unable to find default gateway, make sure computer is connected. Returning 0.0.0.0")
+        return "0.0.0.0"
+
 def check_connection(defaultgateway):
     try:
         param = '-n' if platform.system().lower() == 'windows' else '-c'
