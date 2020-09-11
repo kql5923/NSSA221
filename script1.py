@@ -11,12 +11,12 @@ def get_DG():
         cmd_spl = cmd.split(":")
         return cmd_spl[1]
     else:
-        cmd = subprocess.check_output('ifconfig | grep default"', shell = True)
+        cmd = subprocess.check_output('ip route | grep default', shell = True)
         cmd = cmd.decode()
         cmd_spl = cmd.split(" ")
         return cmd_spl[2]
 def check_connection(defaultgateway):
-    status,result = subprocess.getstatusoutput('ping ' + str(defaultgateway))
+    status,result = subprocess.getstatusoutput('ping -c 4' + str(defaultgateway))
    
     if status == 0:
 
