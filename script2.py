@@ -44,9 +44,7 @@ class User:
         return psswdexpString
 
 def run_command(cmd):
-    proc = subprocess.Popen(cmd,shell = True, stdin = subprocess.PIPE,stdout=subprocess.PIPE)
-    out,err = proc.communicate()
-    print("[RunCommand : OUTPUT]:",out)
+    os.system(cmd)
 def is_int(s):
     try:
         int(s)
@@ -113,6 +111,8 @@ def parse_users_file(userfile):
             if(index == "EmployeeID"):
                 uid = str(val)
             elif(index == "LastName"):
+                val = val.replace("'","")
+                        
                 lname = str(val)
             elif(index == "FirstName"):
                 fname = str(val)
@@ -158,14 +158,17 @@ def main():
             grp.getgrnam(each.department)
         except KeyError:
             addGroup_cmd = 'groupadd -f %s' %(each.department)
-            #run_command(addGroup_cmd)
+            run_command(addGroup_cmd)
             print(addGroup_cmd)
-        # run_command(each.get_formatted_useradd())
-        # run_command(each.get_formatted_passwdStdin())
-        # run_command(each.get_formatted_passwdExp())
-        print(each.get_formatted_useradd())
-        print(each.get_formatted_passwdStdin())
-        print(each.get_formatted_passwdExp())
+        print("useradd string = ",each.get_formatted_useradd())
+        run_command(each.get_formatted_useradd())
+        print("passwd stdin string = ",each.get_formatted_passwdStdin())
+        run_command(each.get_formatted_passwdStdin())
+        print("passwd exp string = ",each.get_formatted_passwdExp())
+        run_command(each.get_formatted_passwdExp())
+        
+        
+        
     
     
 main()
