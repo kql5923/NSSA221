@@ -1,7 +1,13 @@
 import os
 import sys
-import pandas as pd
-#import grp
+import subprocess
+try:
+    import pandas as pd
+    print("[MAIN] pandas installed")
+except ModuleNotFoundError:
+    print("[MAIN] FAILED DUE TO PANDAS PACKAGE MISSING! Beginning install of PANDAS!")
+    os.system("sudo apt-get install python3-pandas")
+import grp
 
 ALL_USERS = []
 class User:
@@ -37,6 +43,10 @@ class User:
         psswdexpString = 'passwd -e %s' %(self.password)
         return psswdexpString
 
+def run_command(cmd):
+    proc = subprocess.Popen(cmd,shell = True, stdin = subprocess.PIPE,stdout=subprocess.PIPE)
+    out,err = proc.communicate()
+    print("[RunCommand : OUTPUT]:",out)
 def is_int(s):
     try:
         int(s)
@@ -71,16 +81,17 @@ def valid_user(user):
 
 def print_user_objs(list):
     for each in list:
-        print("USERID =",each.eid)
-        print("Lastname =",each.lastname)
-        print("Fristname =",each.firstname)
-        print("Office =",each.office)
-        print("Phone =",each.phone)
-        print("Department =",each.department)
-        print("Group =",each.group)
-        print("Username =",each.username)
-        print("Generated pass (will expire) =",each.password)
-        print("-------------------------------------")
+        print("[user obj] -----------------------------------------------")
+        print("USERID =",each.eid,end=' | ')
+        print("Lastname =",each.lastname,end=' | ')
+        print("Fristname =",each.firstname,end=' | ')
+        print("Office =",each.office,end =' | ')
+        print("Phone =",each.phone,end = ' | ')
+        print("Department =",each.department,end=' | ')
+        print("Group =",each.group,end= ' | ')
+        print("Username =",each.username,end = ' | ')
+        print("Generated pass (will expire) =",each.password, end = ' |\n')
+        
         
 def parse_users_file(userfile):
     parsed_user_objects = []
@@ -134,10 +145,27 @@ def parse_users_file(userfile):
 def main():
     infile = str(input("Input File (press enter for default)>"))
     if(infile == ""):
-        infile = "lab02_Users.csv"
+        infile = 'Lab02_Users.csv'
     users = parse_users_file(infile)
+    print("\n")
+    print("==============================================================")
+    print("[main] user objects created:")
     print_user_objs(users)
-    print(users[0].get_formatted_useradd())
-    print(users[0].get_formatted_passwdExp())
-    print(users[0].get_formatted_passwdStdin())
+    print("==============================================================")
+
+    for each in users:
+        try:
+            grp.getgrnam(each.department)
+        except KeyError:
+            addGroup_cmd = 'groupadd -f %s' %(each.department)
+            #run_command(addGroup_cmd)
+            print(addGroup_cmd)
+        # run_command(each.get_formatted_useradd())
+        # run_command(each.get_formatted_passwdStdin())
+        # run_command(each.get_formatted_passwdExp())
+        print(each.get_formatted_useradd())
+        print(each.get_formatted_passwdStdin())
+        print(each.get_formatted_passwdExp())
+    
+    
 main()
