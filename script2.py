@@ -164,6 +164,8 @@ def main():
         run_command(each.get_formatted_useradd())
         print("passwd stdin string = ",each.get_formatted_passwdStdin())
         run_command(each.get_formatted_passwdStdin())
+        echostr = "echo %s" %(each.password)
+        os.system(echostr)
         print("passwd exp string = ",each.get_formatted_passwdExp())
         run_command(each.get_formatted_passwdExp())
         

@@ -149,9 +149,9 @@ def main():
     with open(filename,mode='w+') as csv_file:
         line_writer = csv.writer(csv_file,delimiter=',', quotechar='"',quoting=csv.QUOTE_MINIMAL)
         line_writer.writerow(["______________________",the_date,'_______________________________'])
-        line_writer.writerow(["(key):","count","ip","ports","country","timezone"])
+        line_writer.writerow(["(key):","count","ip","country","timezone"])
         
         for each in FINAL_IP_OBJS:
-            line_writer.writerow([each.count,each.ip,each.ports,each.country,each.timezone])
+            line_writer.writerow([each.count,each.ip,each.country,each.timezone])
 
 main()
